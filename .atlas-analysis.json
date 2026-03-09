@@ -1,0 +1,59 @@
+{
+  "projectType": "general",
+  "projectName": "MatriculaUniPoo",
+  "projectDescription": "A Java Swing desktop application for university course enrollment and student registration management.",
+  "theme": "linden",
+  "primaryColor": "#009999",
+  "lightColor": "#00cccc",
+  "darkColor": "#004444",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "introduction",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Architecture",
+        "pages": [
+          "architecture/overview",
+          "architecture/gui-components",
+          "architecture/data-model"
+        ]
+      },
+      {
+        "group": "Components",
+        "pages": [
+          "components/student-management",
+          "components/authentication",
+          "components/course-enrollment"
+        ]
+      },
+      {
+        "group": "Development",
+        "pages": [
+          "development/setup",
+          "development/building",
+          "development/contributing"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Student registration with validation",
+    "User authentication system",
+    "Course enrollment interface",
+    "Interactive GUI with Java Swing",
+    "Course selection and management"
+  ],
+  "publicApiSurface": [
+    "Alumno class (Student model)",
+    "Cursos class (Course model)",
+    "Inicio frame (Welcome screen)",
+    "Registrar frame (Registration screen)",
+    "Login frame (Authentication screen)",
+    "Matricula frame (Course enrollment screen)"
+  ]
+}
