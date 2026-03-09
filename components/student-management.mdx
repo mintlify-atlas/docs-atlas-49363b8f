@@ -1,0 +1,295 @@
+---
+title: 'Student Management Component'
+description: 'Learn how the student registration system handles data validation, user input, and navigation flow'
+icon: 'user-plus'
+---
+
+## Overview
+
+The Student Management component (`Registrar.java`) provides a comprehensive registration interface for new students. It handles data collection, validation, and secure account creation with real-time feedback.
+
+## Component Architecture
+
+### Core Structure
+
+The `Registrar` class extends `JFrame` and manages student registration through an intuitive form interface:
+
+```java Registrar.java
+public class Registrar extends javax.swing.JFrame {
+    private Inicio ini;
+    private Login log;
+    Alumno alu = new Alumno();
+
+    public Registrar() {
+        initComponents();
+        this.log = new Login();
+        log.setRegis(this);
+    }
+}
+```
+
+<Info>
+The component maintains references to both the Login screen and the student data model (Alumno), ensuring seamless navigation and data persistence.
+</Info>
+
+## User Interface Layout
+
+### Form Fields
+
+The registration form collects four essential pieces of information:
+
+<Steps>
+  <Step title="Student Name">
+    Text field for entering the student's first name
+    
+    ```java
+    txtNombre.setForeground(new java.awt.Color(0, 0, 0));
+    ```
+  </Step>
+  
+  <Step title="Last Name">
+    Text field for the student's surname
+    
+    ```java
+    txtApellido.setForeground(new java.awt.Color(0, 0, 0));
+    ```
+  </Step>
+  
+  <Step title="DNI (National ID)">
+    Unique identifier used as the login username
+    
+    ```java
+    txtDni.setForeground(new java.awt.Color(0, 0, 0));
+    ```
+  </Step>
+  
+  <Step title="Password">
+    Secure password field for account protection
+    
+    ```java
+    txtContra.setForeground(new java.awt.Color(0, 0, 0));
+    ```
+  </Step>
+</Steps>
+
+### Color Scheme
+
+The component uses a professional teal color palette:
+
+```java
+jPanel1.setBackground(new java.awt.Color(0, 68, 68));  // Dark teal background
+jPanel1.setForeground(new java.awt.Color(0, 68, 68));
+
+btnEliminar.setBackground(new java.awt.Color(0, 153, 153));  // Bright teal buttons
+btnEliminar.setForeground(new java.awt.Color(255, 255, 255));  // White text
+```
+
+## Event Handlers
+
+### Real-Time Data Capture
+
+Each form field captures data as the user types, updating the `Alumno` model instantly:
+
+<CodeGroup>
+
+```java Name Input
+private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {
+    String nombre = txtNombre.getText();
+    alu.setNombre(nombre);
+}
+```
+
+```java Surname Input
+private void txtApellidoActionPerformed(java.awt.event.ActionEvent evt) {
+    String apellido = txtApellido.getText();
+    alu.setApellido(apellido);
+}
+```
+
+```java DNI Input
+private void txtDniActionPerformed(java.awt.event.ActionEvent evt) {
+    String dni = txtDni.getText();
+    alu.setDni(dni);
+}
+```
+
+```java Password Input
+private void txtContraActionPerformed(java.awt.event.ActionEvent evt) {
+    String contra = txtContra.getText();
+    alu.setContraseña(contra);
+}
+```
+
+</CodeGroup>
+
+## Input Validation
+
+### Registration Validation Logic
+
+The system performs comprehensive validation before allowing registration. Each field is checked sequentially:
+
+```java Registrar.java:207-227
+private void btnRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {
+    String nombre = txtNombre.getText();
+    String apellido = txtApellido.getText();
+    String dni = txtDni.getText();
+    String contra = txtContra.getText();
+    
+    if (nombre.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "COMPLETE SU NOMBRE", 
+            "Advertencia", JOptionPane.WARNING_MESSAGE);
+    } else if (apellido.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "COMPLETE SU APELLIDO", 
+            "Advertencia", JOptionPane.WARNING_MESSAGE);
+    } else if (dni.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "COMPLETE SU DNI", 
+            "Advertencia", JOptionPane.WARNING_MESSAGE);
+    } else if (contra.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "COMPLETE SU CONTRASEÑA", 
+            "Advertencia", JOptionPane.WARNING_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(null, "REGISTRO EXITOSO");
+        log = new Login(dni, contra);
+        log.setRegis(this);
+        log.setVisible(true);
+        log.setLocationRelativeTo(null);
+        this.setVisible(false);
+    }
+}
+```
+
+<Warning>
+The validation ensures all fields are completed before proceeding. Empty fields trigger warning dialogs with specific messages.
+</Warning>
+
+### Validation Flow
+
+<Accordion title="Step-by-Step Validation Process">
+  1. **Retrieve Values**: Extract text from all input fields
+  2. **Check Name**: Verify the name field is not empty
+  3. **Check Surname**: Validate the apellido field has content
+  4. **Check DNI**: Ensure the DNI (unique identifier) is provided
+  5. **Check Password**: Confirm a password has been entered
+  6. **Success Path**: If all validations pass:
+     - Display success message
+     - Create Login instance with credentials
+     - Navigate to Login screen
+     - Hide registration form
+</Accordion>
+
+## Navigation Control
+
+### Back Navigation
+
+Users can return to the previous screen without losing their session:
+
+```java Registrar.java:200-205
+private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {
+    ini.setRegistrate(this);
+    ini.setVisible(true);
+    ini.setLocationRelativeTo(null);
+    this.setVisible(false);
+}
+```
+
+<Note>
+The window is centered on screen using `setLocationRelativeTo(null)` for better UX.
+</Note>
+
+## Form Management
+
+### Clear All Fields
+
+The ELIMINAR (Delete) button resets all form fields to empty state:
+
+```java Registrar.java:230-236
+private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {
+    txtNombre.setText("");
+    txtApellido.setText("");
+    txtDni.setText("");
+    txtContra.setText("");
+}
+```
+
+<Tip>
+This feature allows users to quickly start over without navigating away from the form.
+</Tip>
+
+## Data Model Integration
+
+### Student Model (Alumno)
+
+The registration component works with the `Alumno` data model:
+
+```java Alumno.java
+public class Alumno {
+    private String nombre, apellido, contraseña, dni;
+    
+    public Alumno() {}
+
+    public Alumno(String nombre, String apellido, String contraseña, String dni) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.contraseña = contraseña;
+        this.dni = dni;
+    }
+
+    // Getters and setters
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    
+    public String getApellido() { return apellido; }
+    public void setApellido(String apellido) { this.apellido = apellido; }
+    
+    public String getDni() { return dni; }
+    public void setDni(String dni) { this.dni = dni; }
+    
+    public String getContraseña() { return contraseña; }
+    public void setContraseña(String contraseña) { this.contraseña = contraseña; }
+}
+```
+
+## Component Lifecycle
+
+<Steps>
+  <Step title="Initialization">
+    The component initializes with empty form fields and creates a new `Alumno` instance
+  </Step>
+  
+  <Step title="User Input">
+    As users type, event handlers update the Alumno model in real-time
+  </Step>
+  
+  <Step title="Validation">
+    On registration attempt, all fields are validated sequentially
+  </Step>
+  
+  <Step title="Success Transition">
+    Valid data triggers navigation to Login screen with credentials passed
+  </Step>
+</Steps>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Real-Time Updates" icon="clock">
+    Form data is captured immediately as users interact with fields
+  </Card>
+  
+  <Card title="Sequential Validation" icon="shield-check">
+    Clear, ordered validation prevents submission of incomplete data
+  </Card>
+  
+  <Card title="User Feedback" icon="message">
+    Dialog boxes provide immediate feedback on validation errors
+  </Card>
+  
+  <Card title="Form Reset" icon="rotate-left">
+    Quick clear functionality for starting over
+  </Card>
+</CardGroup>
+
+## Related Components
+
+- [Authentication](/components/authentication) - Where registered users log in
+- [Course Enrollment](/components/course-enrollment) - Post-login functionality

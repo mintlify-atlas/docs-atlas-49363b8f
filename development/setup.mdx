@@ -1,0 +1,390 @@
+---
+title: Development Setup
+description: Set up your development environment for MatriculaUniPoo
+icon: wrench
+---
+
+## Prerequisites
+
+Before you begin development on MatriculaUniPoo, ensure you have the following tools installed on your system.
+
+<CardGroup cols={2}>
+  <Card title="Java Development Kit" icon="java">
+    JDK 20 or higher is required
+  </Card>
+  <Card title="Apache Maven" icon="box">
+    Maven 3.6+ for dependency management
+  </Card>
+  <Card title="IDE (Optional)" icon="code">
+    NetBeans, IntelliJ IDEA, or Eclipse
+  </Card>
+  <Card title="Git" icon="git-alt">
+    For version control
+  </Card>
+</CardGroup>
+
+## Installing Java 20
+
+<Tabs>
+  <Tab title="Windows">
+    <Steps>
+      <Step title="Download JDK 20">
+        Download the JDK 20 installer from [Oracle](https://www.oracle.com/java/technologies/downloads/) or use [OpenJDK](https://jdk.java.net/20/).
+      </Step>
+      
+      <Step title="Run the Installer">
+        Execute the downloaded `.exe` file and follow the installation wizard.
+      </Step>
+      
+      <Step title="Set JAVA_HOME">
+        Add the JDK installation path to your system environment variables:
+        ```bash
+        setx JAVA_HOME "C:\Program Files\Java\jdk-20"
+        setx PATH "%PATH%;%JAVA_HOME%\bin"
+        ```
+      </Step>
+      
+      <Step title="Verify Installation">
+        Open a new command prompt and verify:
+        ```bash
+        java -version
+        ```
+        You should see output showing Java version 20.
+      </Step>
+    </Steps>
+  </Tab>
+  
+  <Tab title="macOS">
+    <Steps>
+      <Step title="Install via Homebrew">
+        ```bash
+        brew install openjdk@20
+        ```
+      </Step>
+      
+      <Step title="Link the Installation">
+        ```bash
+        sudo ln -sfn /opt/homebrew/opt/openjdk@20/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-20.jdk
+        ```
+      </Step>
+      
+      <Step title="Set JAVA_HOME">
+        Add to your `~/.zshrc` or `~/.bash_profile`:
+        ```bash
+        export JAVA_HOME=$(/usr/libexec/java_home -v 20)
+        export PATH="$JAVA_HOME/bin:$PATH"
+        ```
+      </Step>
+      
+      <Step title="Verify Installation">
+        ```bash
+        java -version
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+  
+  <Tab title="Linux">
+    <Steps>
+      <Step title="Install OpenJDK 20">
+        ```bash
+        # Ubuntu/Debian
+        sudo apt update
+        sudo apt install openjdk-20-jdk
+        
+        # Fedora/RHEL
+        sudo dnf install java-20-openjdk-devel
+        ```
+      </Step>
+      
+      <Step title="Set JAVA_HOME">
+        Add to `~/.bashrc` or `~/.profile`:
+        ```bash
+        export JAVA_HOME=/usr/lib/jvm/java-20-openjdk-amd64
+        export PATH="$JAVA_HOME/bin:$PATH"
+        ```
+      </Step>
+      
+      <Step title="Verify Installation">
+        ```bash
+        java -version
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>
+
+## Installing Apache Maven
+
+<Tabs>
+  <Tab title="Windows">
+    <Steps>
+      <Step title="Download Maven">
+        Download the binary zip archive from [Apache Maven](https://maven.apache.org/download.cgi).
+      </Step>
+      
+      <Step title="Extract Archive">
+        Extract to `C:\Program Files\Apache\maven`
+      </Step>
+      
+      <Step title="Set Environment Variables">
+        ```bash
+        setx MAVEN_HOME "C:\Program Files\Apache\maven"
+        setx PATH "%PATH%;%MAVEN_HOME%\bin"
+        ```
+      </Step>
+      
+      <Step title="Verify Installation">
+        ```bash
+        mvn -version
+        ```
+      </Step>
+    </Steps>
+  </Tab>
+  
+  <Tab title="macOS">
+    ```bash
+    brew install maven
+    mvn -version
+    ```
+  </Tab>
+  
+  <Tab title="Linux">
+    ```bash
+    # Ubuntu/Debian
+    sudo apt update
+    sudo apt install maven
+    
+    # Fedora/RHEL
+    sudo dnf install maven
+    
+    # Verify
+    mvn -version
+    ```
+  </Tab>
+</Tabs>
+
+## Project Setup
+
+<Steps>
+  <Step title="Clone the Repository">
+    Clone the MatriculaUniPoo project to your local machine:
+    ```bash
+    git clone <repository-url>
+    cd Matricula
+    ```
+  </Step>
+  
+  <Step title="Verify Project Structure">
+    Ensure your project structure matches:
+    ```
+    Matricula/
+    ├── pom.xml
+    ├── src/
+    │   └── main/
+    │       └── java/
+    │           ├── igu/
+    │           │   ├── Inicio.java
+    │           │   ├── Login.java
+    │           │   ├── Matricula.java
+    │           │   └── Registrar.java
+    │           └── logica/
+    │               ├── Alumno.java
+    │               ├── Cursos.java
+    │               └── Main.java
+    └── target/
+    ```
+  </Step>
+  
+  <Step title="Download Dependencies">
+    Maven will automatically download all required dependencies:
+    ```bash
+    mvn clean install
+    ```
+    
+    <Note>
+      The project uses NetBeans AbsoluteLayout library for Swing GUI components. This will be downloaded automatically from Maven Central.
+    </Note>
+  </Step>
+  
+  <Step title="Verify Compilation">
+    Ensure the project compiles successfully:
+    ```bash
+    mvn compile
+    ```
+    
+    You should see output indicating successful compilation:
+    ```
+    [INFO] BUILD SUCCESS
+    [INFO] ------------------------------------------------------------------------
+    ```
+  </Step>
+</Steps>
+
+## IDE Configuration
+
+<AccordionGroup>
+  <Accordion title="NetBeans">
+    <Steps>
+      <Step title="Install NetBeans">
+        Download and install [Apache NetBeans](https://netbeans.apache.org/) version 12.0 or higher.
+      </Step>
+      
+      <Step title="Open Project">
+        1. File → Open Project
+        2. Navigate to the `Matricula` folder
+        3. Select and open the project
+      </Step>
+      
+      <Step title="Resolve Dependencies">
+        NetBeans will automatically recognize the Maven `pom.xml` and download dependencies.
+      </Step>
+      
+      <Step title="Configure Java Platform">
+        Right-click project → Properties → Libraries → Java Platform → Select JDK 20
+      </Step>
+    </Steps>
+    
+    <Info>
+      NetBeans provides excellent support for Swing Form Designer, which was used to create the GUI forms (`.form` files).
+    </Info>
+  </Accordion>
+  
+  <Accordion title="IntelliJ IDEA">
+    <Steps>
+      <Step title="Import Maven Project">
+        1. File → Open
+        2. Select the `Matricula` folder
+        3. IntelliJ will detect the `pom.xml` and import as Maven project
+      </Step>
+      
+      <Step title="Set Project SDK">
+        File → Project Structure → Project → SDK → Select JDK 20
+      </Step>
+      
+      <Step title="Enable Auto-Import">
+        Settings → Build, Execution, Deployment → Build Tools → Maven → Check "Import Maven projects automatically"
+      </Step>
+    </Steps>
+  </Accordion>
+  
+  <Accordion title="Eclipse">
+    <Steps>
+      <Step title="Install M2Eclipse Plugin">
+        Help → Eclipse Marketplace → Search "Maven Integration" → Install
+      </Step>
+      
+      <Step title="Import Maven Project">
+        1. File → Import → Maven → Existing Maven Projects
+        2. Browse to the `Matricula` folder
+        3. Select `pom.xml` and click Finish
+      </Step>
+      
+      <Step title="Configure Java Compiler">
+        Right-click project → Properties → Java Compiler → Compiler compliance level → 20
+      </Step>
+    </Steps>
+  </Accordion>
+</AccordionGroup>
+
+## Running the Application
+
+Once your environment is set up, you can run the application:
+
+<CodeGroup>
+```bash Maven
+mvn clean compile exec:java
+```
+
+```bash Java Direct
+mvn clean package
+java -cp target/Matricula-1.0-SNAPSHOT.jar com.mycompany.matricula.Matricula
+```
+
+```bash From IDE
+# Right-click Main.java → Run File
+# Or use the main class: logica.Main
+```
+</CodeGroup>
+
+<Tip>
+  The application entry point is `logica.Main.java`, which initializes the welcome screen (`Inicio`).
+</Tip>
+
+## Understanding the Main Entry Point
+
+The application starts from the `Main` class:
+
+```java Main.java
+package logica;
+
+import igu.Inicio;
+
+public class Main {
+    public static void main(String[] args) {
+        Inicio in = new Inicio();
+        in.setVisible(true);
+        in.setLocationRelativeTo(null);
+    }
+}
+```
+
+This creates and displays the welcome screen centered on the user's display.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Maven Build Fails">
+    **Problem**: Maven cannot download dependencies
+    
+    **Solution**:
+    ```bash
+    # Clear Maven cache and rebuild
+    mvn clean
+    mvn dependency:purge-local-repository
+    mvn install
+    ```
+  </Accordion>
+  
+  <Accordion title="Java Version Mismatch">
+    **Problem**: Error about unsupported class file version
+    
+    **Solution**: Verify Java version
+    ```bash
+    java -version
+    javac -version
+    ```
+    Both should show version 20. Update `JAVA_HOME` if needed.
+  </Accordion>
+  
+  <Accordion title="GUI Forms Not Displaying">
+    **Problem**: Swing forms appear blank or incorrectly rendered
+    
+    **Solution**: Ensure AbsoluteLayout dependency is present:
+    ```bash
+    mvn dependency:tree | grep AbsoluteLayout
+    ```
+    Should show: `org.netbeans.external:AbsoluteLayout:jar:RELEASE190`
+  </Accordion>
+  
+  <Accordion title="Images Not Loading">
+    **Problem**: Application icons or background images missing
+    
+    **Solution**: The application references hardcoded image paths. Update these in the source:
+    - `Inicio.java:52` - Background image path
+    - `Login.java:140` - Login icon path
+    
+    Place images in the appropriate location or update paths to resources folder.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Building the Project" icon="hammer" href="/development/building">
+    Learn how to build and package the application
+  </Card>
+  <Card title="Contributing" icon="code-pull-request" href="/development/contributing">
+    Guidelines for contributing to the project
+  </Card>
+</CardGroup>

@@ -1,0 +1,350 @@
+---
+title: 'Authentication Component'
+description: 'Understand the login system, credential validation, and session management'
+icon: 'lock'
+---
+
+## Overview
+
+The Authentication component (`Login.java`) provides secure access control to the MatriculaUniPoo system. It validates user credentials against registration data and manages navigation between screens.
+
+## Component Architecture
+
+### Core Structure
+
+The `Login` class maintains credential state and manages authentication flow:
+
+```java Login.java
+public class Login extends javax.swing.JFrame {
+    private Registrar regis;
+    private Matricula matri;
+    private String regisDni;
+    private String regisContra;
+
+    public Login() {
+        this("","");
+        initComponents();
+    }
+    
+    public Login(String regisDni, String regisContra) {
+        this.regisDni = regisDni;
+        this.regisContra = regisContra;
+        this.matri = new Matricula();
+        matri.setLog(this);
+        initComponents();
+    }
+}
+```
+
+<Info>
+The component supports two constructors: a default empty constructor and one that receives credentials from the registration process.
+</Info>
+
+## User Interface Design
+
+### Dual Panel Layout
+
+The login screen features a modern two-panel design:
+
+<CodeGroup>
+
+```java Left Panel (White)
+jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+jPanel2.setForeground(new java.awt.Color(0, 153, 255));
+
+jLabel5.setIcon(new javax.swing.ImageIcon(
+    "C:\\Users\\Anghelo\\Desktop\\CerebroLogin.png"
+));
+```
+
+```java Right Panel (Teal)
+jPanel1.setBackground(new java.awt.Color(0, 68, 68));
+jPanel1.setForeground(new java.awt.Color(0, 68, 68));
+```
+
+</CodeGroup>
+
+<Note>
+The left panel displays branding imagery while the right panel contains the login form.
+</Note>
+
+### Login Form Fields
+
+<Steps>
+  <Step title="Username Field">
+    DNI (National ID) serves as the unique username
+    
+    ```java
+    txtUsuario.setBackground(new java.awt.Color(0, 68, 68));
+    txtUsuario.setForeground(new java.awt.Color(255, 255, 255));
+    txtUsuario.setCaretColor(new java.awt.Color(255, 255, 255));
+    ```
+  </Step>
+  
+  <Step title="Password Field">
+    Secure password field with masked input
+    
+    ```java
+    pswContra.setBackground(new java.awt.Color(0, 68, 68));
+    pswContra.setForeground(new java.awt.Color(255, 255, 255));
+    pswContra.setCaretColor(new java.awt.Color(255, 255, 255));
+    ```
+  </Step>
+</Steps>
+
+## Authentication Logic
+
+### Credential Validation
+
+The login system performs exact matching of credentials:
+
+```java Login.java:171-183
+private void btnIniciarSesionActionPerformed(java.awt.event.ActionEvent evt) {
+    String usuario = txtUsuario.getText();
+    String contra = new String(pswContra.getPassword());
+    
+    if (usuario.equals(regisDni) && contra.equals(regisContra)) {
+        JOptionPane.showMessageDialog(null, "INICIO EXITOSO");
+        matri.setLog(this);
+        matri.setVisible(true);
+        matri.setLocationRelativeTo(null);
+        this.setVisible(false);
+    } else {
+        JOptionPane.showMessageDialog(this, 
+            "USUARIO O CONTRASEÑA INCORRECTA", 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
+    }
+}
+```
+
+<Warning>
+Both username (DNI) and password must match exactly for successful authentication. Partial matches are rejected.
+</Warning>
+
+### Validation Flow
+
+<Accordion title="Authentication Process Breakdown">
+  1. **Extract Credentials**
+     - Retrieve username from text field
+     - Extract password from password field using `getPassword()`
+  
+  2. **Compare Against Stored Values**
+     - Check if entered DNI matches `regisDni`
+     - Verify password matches `regisContra`
+  
+  3. **Success Path**
+     - Display success message dialog
+     - Initialize Matricula (enrollment) component
+     - Navigate to enrollment screen
+     - Hide login window
+  
+  4. **Failure Path**
+     - Show error dialog with descriptive message
+     - Keep user on login screen
+     - Allow retry without clearing fields
+</Accordion>
+
+## Security Considerations
+
+### Password Handling
+
+The component uses `JPasswordField` for secure password entry:
+
+```java
+pswContra = new javax.swing.JPasswordField();
+pswContra.setDisabledTextColor(new java.awt.Color(255, 255, 255));
+pswContra.setSelectedTextColor(new java.awt.Color(255, 255, 255));
+pswContra.setSelectionColor(new java.awt.Color(255, 255, 255));
+```
+
+<Tip>
+`JPasswordField` automatically masks password characters as bullets (•) to prevent shoulder surfing.
+</Tip>
+
+### Extracting Password Securely
+
+Passwords are extracted using the recommended `getPassword()` method:
+
+```java
+String contra = new String(pswContra.getPassword());
+```
+
+<Info>
+This returns a char array instead of a String, allowing secure memory cleanup. The conversion to String happens only for comparison.
+</Info>
+
+## Navigation Management
+
+### Return to Registration
+
+Users can navigate back to registration if they don't have an account:
+
+```java Login.java:164-169
+private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {
+    regis.setLog(this);
+    regis.setVisible(true);
+    regis.setLocationRelativeTo(null);
+    this.setVisible(false);
+}
+```
+
+### Session Flow
+
+<Steps>
+  <Step title="From Registration">
+    After successful registration, credentials are passed to Login constructor
+    
+    ```java
+    log = new Login(dni, contra);
+    log.setRegis(this);
+    log.setVisible(true);
+    ```
+  </Step>
+  
+  <Step title="Authentication">
+    User enters credentials and attempts login
+  </Step>
+  
+  <Step title="To Enrollment">
+    Successful login navigates to Matricula (enrollment) screen
+    
+    ```java
+    matri.setLog(this);
+    matri.setVisible(true);
+    matri.setLocationRelativeTo(null);
+    ```
+  </Step>
+</Steps>
+
+## Component Interaction
+
+### Setter Methods for Navigation
+
+The component provides setters to maintain references to other screens:
+
+```java Login.java
+public void setRegis(Registrar regis) {
+    this.regis = regis;
+}
+
+public void setMatri(Matricula matri) {
+    this.matri = matri;
+}
+```
+
+<Note>
+These bidirectional references enable seamless navigation between components while preserving state.
+</Note>
+
+## User Feedback
+
+### Success Dialog
+
+Successful authentication displays a confirmation message:
+
+```java
+JOptionPane.showMessageDialog(null, "INICIO EXITOSO");
+```
+
+### Error Dialog
+
+Failed authentication shows a descriptive error:
+
+```java
+JOptionPane.showMessageDialog(this, 
+    "USUARIO O CONTRASEÑA INCORRECTA", 
+    "Error", 
+    JOptionPane.ERROR_MESSAGE);
+```
+
+<CardGroup cols={2}>
+  <Card title="Success Message" icon="circle-check">
+    Generic success message without revealing which credential is correct
+  </Card>
+  
+  <Card title="Error Message" icon="circle-xmark">
+    Generic error that doesn't specify which field is incorrect (security best practice)
+  </Card>
+</CardGroup>
+
+## Visual Styling
+
+### Form Labels
+
+Clear, instructive labels guide users:
+
+```java
+jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14));
+jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+jLabel1.setText("Ingresa tus datos para INICIAR SESION:");
+
+jLabel3.setText("USUARIO: DNI DEL ESTUDIANTE");
+jLabel4.setText("CONTRASEÑA");
+```
+
+### Button Styling
+
+Buttons follow the application's color scheme:
+
+```java
+btnIniciarSesion.setBackground(new java.awt.Color(0, 153, 153));
+btnIniciarSesion.setFont(new java.awt.Font("Segoe UI", 1, 14));
+btnIniciarSesion.setForeground(new java.awt.Color(255, 255, 255));
+btnIniciarSesion.setText("INICIAR SESION");
+```
+
+## Layout Structure
+
+### Absolute Layout Configuration
+
+The form uses absolute positioning for precise control:
+
+```java
+jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+jPanel1.add(txtUsuario, 
+    new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 130, 286, 30));
+    
+jPanel1.add(pswContra, 
+    new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 220, 286, 30));
+```
+
+### Visual Separators
+
+Separator lines organize the form visually:
+
+```java
+jSeparator1.setForeground(new java.awt.Color(255, 255, 255));
+jPanel1.add(jSeparator1, 
+    new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 37, 330, 10));
+
+jSeparator2.setForeground(new java.awt.Color(255, 255, 255));
+jPanel1.add(jSeparator2, 
+    new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, 330, 10));
+```
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Credential Matching" icon="key">
+    Exact string comparison for username and password validation
+  </Card>
+  
+  <Card title="Secure Input" icon="eye-slash">
+    Password field masks sensitive data during entry
+  </Card>
+  
+  <Card title="Navigation Control" icon="arrows-turn-to-dots">
+    Seamless transitions between registration, login, and enrollment
+  </Card>
+  
+  <Card title="Error Handling" icon="triangle-exclamation">
+    Clear feedback for authentication failures
+  </Card>
+</CardGroup>
+
+## Related Components
+
+- [Student Management](/components/student-management) - Registration process before login
+- [Course Enrollment](/components/course-enrollment) - Post-authentication functionality

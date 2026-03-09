@@ -1,0 +1,439 @@
+---
+title: 'Course Enrollment Component'
+description: 'Explore the course selection interface, table management, and enrollment workflow'
+icon: 'graduation-cap'
+---
+
+## Overview
+
+The Course Enrollment component (`Matricula.java`) provides an interactive interface for students to select courses, manage their schedule, and complete enrollment. It features dynamic table updates, course selection dropdowns, and comprehensive enrollment management.
+
+## Component Architecture
+
+### Core Structure
+
+```java Matricula.java
+public final class Matricula extends javax.swing.JFrame {
+    private Login log;
+    
+    ArrayList<Cursos> listaCursos = new ArrayList<>();
+    DefaultTableModel modelo = new DefaultTableModel();
+  
+    public Matricula() {
+        initComponents();
+        modelo = new DefaultTableModel();
+        modelo.addColumn("Cursos");
+        refrescarTabla();
+    }
+}
+```
+
+<Info>
+The component uses an ArrayList to store course selections and a DefaultTableModel for dynamic table rendering.
+</Info>
+
+## Data Model
+
+### Course Model (Cursos)
+
+The `Cursos` class represents a student's course selection:
+
+```java Cursos.java
+public class Cursos {
+    String matematica, historia, ciencias, literatura, civica;
+    
+    public Cursos() {}
+    
+    public Cursos(String matematica, String historia, String ciencias, 
+                  String literatura, String civica) {
+        this.matematica = matematica;
+        this.historia = historia;
+        this.ciencias = ciencias;
+        this.literatura = literatura;
+        this.civica = civica;
+    }
+
+    // Getters and setters for each course field
+    public String getMatematica() { return matematica; }
+    public void setMatematica(String matematica) { this.matematica = matematica; }
+    
+    public String getHistoria() { return historia; }
+    public void setHistoria(String historia) { this.historia = historia; }
+    
+    public String getCiencias() { return ciencias; }
+    public void setCiencias(String ciencias) { this.ciencias = ciencias; }
+    
+    public String getLiteratura() { return literatura; }
+    public void setLiteratura(String literatura) { this.literatura = literatura; }
+    
+    public String getCivica() { return civica; }
+    public void setCivica(String civica) { this.civica = civica; }
+}
+```
+
+## Course Selection Interface
+
+### Available Courses
+
+The system offers five subject areas, each with multiple section options:
+
+<Steps>
+  <Step title="Mathematics">
+    Four different sections with varying professors, rooms, and schedules
+    
+    ```java
+    scrMatematica.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { 
+        "Ninguno", 
+        "Matematica| Prof. Raúl Hernandez  | A0504  | Lun y Mie  2:00pm a 4:00pm", 
+        "Matematica| Prof. Javier Paucar   | A0307  | Mar y Jue  2:00pm a 4:00pm", 
+        "Matematica| Prof. Amanda Ruiz     | B0603  | Lun y Mie  4:30pm a 6:30pm", 
+        "Matematica| Prof. Jose Romero     | C0504  | Mar y Jue  4:30pm a 6:30pm" 
+    }));
+    ```
+  </Step>
+  
+  <Step title="History of Peru">
+    Four sections covering different time slots
+    
+    ```java
+    scrHistoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { 
+        "Ninguno", 
+        "Historia| Prof. Marisol Mercede | A0304  | Lun  10:00am a 1:00pm", 
+        "Historia| Prof. Carlos Alberto  | A0105  | Jue   9:00am a 11:00pm", 
+        "Historia| Prof. Luis Campos     | B0503  | Mie   1:00pm a 4:00pm", 
+        "Historia| Prof. Juan Lopez      | C0704  | Mar  5:00pm a 8:00pm" 
+    }));
+    ```
+  </Step>
+  
+  <Step title="Literature">
+    Four literature sections with varied schedules
+    
+    ```java
+    scrLiteratura.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { 
+        "Ninguno", 
+        "Literat| Prof. Mario de Valle  | A0107  | Mar y Sab  8:00am a 9:30am", 
+        "Literat| Prof. Sara Ordoñez    | C0405  | Lun y Vier  9:00am a 10:30am", 
+        "Literat| Prof. Mario Lopez     | A403   | Lun y Mar  10:30am a 11:30am", 
+        "Literat| Prof. Renato Arevalo  | C0202  | Mar y Mier  11:00am a 1:30pm" 
+    }));
+    ```
+  </Step>
+  
+  <Step title="Civics">
+    Four civics sections, mostly single-day meetings
+    
+    ```java
+    scrCivica.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { 
+        "Ninguno", 
+        "Civica| Prof. Carmela Calderon | B0102  | Lun 8:00pm a 9:00pm", 
+        "Civica| Prof. Percy Coronel    | A0804  | Mar 5:00pm a 6:00pm", 
+        "Civica| Prof. Antonio Lima     | B0709  | Sab 9:00am a 10:00am", 
+        "Civica| Prof. Solano Ventura   | C0502  | Vier 10:00am a 11:00am" 
+    }));
+    ```
+  </Step>
+  
+  <Step title="Sciences">
+    Four science sections across the week
+    
+    ```java
+    scrCiencias.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { 
+        "Ninguno", 
+        "Ciencias| Prof. Victoria Dueñas | D0405 | Mier 1:00pm a 3:00pm", 
+        "Ciencias| Prof. Oscar Orihuela  | B0305 | Jue 8:00am a 10:00am", 
+        "Ciencias| Prof. Hernan Rios     | B0107 | Jue 11:30am a 1:30pm", 
+        "Ciencias| Prof. Lidia Toscano   | A0804 | Jue 6:00pm a 8:00pm" 
+    }));
+    ```
+  </Step>
+</Steps>
+
+<Note>
+Each course dropdown includes "Ninguno" (None) as the first option, allowing students to skip courses they don't want to enroll in.
+</Note>
+
+## Adding Courses to Enrollment
+
+### Course Addition Logic
+
+When students click "Agregar cursos" (Add courses), their selections are captured:
+
+```java Matricula.java:413-422
+private void btnMatematicasActionPerformed(java.awt.event.ActionEvent evt) {
+    Cursos curso = new Cursos();
+    curso.setMatematica(scrMatematica.getSelectedItem().toString());
+    curso.setHistoria(scrHistoria.getSelectedItem().toString());
+    curso.setLiteratura(scrLiteratura.getSelectedItem().toString());
+    curso.setCivica(scrCivica.getSelectedItem().toString());
+    curso.setCiencias(scrCiencias.getSelectedItem().toString());
+    listaCursos.add(curso);
+    refrescarTabla();
+}
+```
+
+<Accordion title="Course Addition Process">
+  1. **Create Course Object**: Instantiate a new `Cursos` object
+  2. **Capture Selections**: Extract selected items from each ComboBox
+  3. **Populate Object**: Set each field using the selected course information
+  4. **Add to List**: Append the course object to `listaCursos` ArrayList
+  5. **Refresh Display**: Call `refrescarTabla()` to update the enrollment table
+</Accordion>
+
+## Table Management
+
+### Dynamic Table Refresh
+
+The `refrescarTabla()` method updates the enrollment table with current selections:
+
+```java Matricula.java:368-390
+public void refrescarTabla() {
+    for (Cursos curso : listaCursos) {
+        Object a[] = new Object[1];
+        
+        a[0] = curso.getMatematica();
+        modelo.addRow(a);
+        
+        a[0] = curso.getHistoria();
+        modelo.addRow(a);
+        
+        a[0] = curso.getLiteratura();
+        modelo.addRow(a);
+        
+        a[0] = curso.getCivica();
+        modelo.addRow(a);
+        
+        a[0] = curso.getCiencias();
+        modelo.addRow(a);
+    }
+    
+    tblMatricula.setModel(modelo);
+}
+```
+
+<Warning>
+This method adds all courses from each `Cursos` object as separate rows, meaning each course addition creates 5 table rows (one per subject).
+</Warning>
+
+### Table Initialization
+
+The table model is configured during component initialization:
+
+```java
+modelo = new DefaultTableModel();
+modelo.addColumn("Cursos");
+tblMatricula.setModel(modelo);
+```
+
+### Table Styling
+
+```java
+tblMatricula.setBackground(new java.awt.Color(0, 204, 204));
+tblMatricula.setForeground(new java.awt.Color(0, 0, 0));
+```
+
+## Enrollment Management Operations
+
+### Delete Selected Row
+
+Students can remove individual course entries:
+
+```java Matricula.java:424-431
+private void btnEliminar_filaActionPerformed(java.awt.event.ActionEvent evt) {
+    int fila = tblMatricula.getSelectedRow();
+    if (fila >= 0) {
+        modelo.removeRow(fila);
+    } else {
+        JOptionPane.showMessageDialog(null, "Seleccionar Fila");
+    }
+}
+```
+
+<Tip>
+The system provides feedback if no row is selected, prompting the user to select a row first.
+</Tip>
+
+### Clear All Courses
+
+The "Eliminar todo" (Delete all) button removes all courses from the table:
+
+```java Matricula.java:433-438
+private void btnEliminar_todoActionPerformed(java.awt.event.ActionEvent evt) {
+    int fila = tblMatricula.getRowCount();
+    for (int i = fila - 1; i >= 0; i--) {
+        modelo.removeRow(i);
+    }
+}
+```
+
+<Info>
+The loop iterates backwards from the last row to avoid index shifting issues during deletion.
+</Info>
+
+## Enrollment Completion
+
+### Finalize Enrollment
+
+When students complete their course selection:
+
+```java Matricula.java:447-449
+private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {
+    JOptionPane.showMessageDialog(null, "MATRICULA COMPLETADA");
+}
+```
+
+<Note>
+The current implementation displays a success message. In a production system, this would persist enrollment data to a database.
+</Note>
+
+## Navigation Controls
+
+### Return to Login
+
+Students can return to the login screen:
+
+```java Matricula.java:440-445
+private void btnVolver_loginActionPerformed(java.awt.event.ActionEvent evt) {
+    log.setMatri(this);
+    log.setVisible(true);
+    log.setLocationRelativeTo(null);
+    this.setVisible(false);
+}
+```
+
+### Component References
+
+```java
+public void setLog(Login log) {
+    this.log = log;
+}
+```
+
+## User Interface Elements
+
+### Form Labels
+
+Clear instructions guide the enrollment process:
+
+```java
+jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24));
+jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+jLabel1.setText("Matricula");
+
+jLabel2.setText("Elige los cursos que llevaras este ciclo:");
+jLabel3.setText("Cuando elijas tus cursos, dale click al botón matricula.");
+```
+
+### Course Labels
+
+Each subject has a bold, prominent label:
+
+```java
+jLabel4.setFont(new java.awt.Font("Segoe UI Black", 1, 18));
+jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+jLabel4.setText("-Matemática:");
+
+jLabel5.setText("-Historia del Perú:");
+jLabel6.setText("-Literatura:");
+jLabel7.setText("-Civica:");
+jLabel8.setText("-Ciencias:");
+```
+
+## Button Configuration
+
+<CodeGroup>
+
+```java Add Courses
+btnMatematicas.setBackground(new java.awt.Color(0, 153, 153));
+btnMatematicas.setFont(new java.awt.Font("Segoe UI", 1, 14));
+btnMatematicas.setForeground(new java.awt.Color(255, 255, 255));
+btnMatematicas.setText("Agregar cursos");
+```
+
+```java Delete Row
+btnEliminar_fila.setBackground(new java.awt.Color(0, 153, 153));
+btnEliminar_fila.setFont(new java.awt.Font("Segoe UI", 1, 14));
+btnEliminar_fila.setForeground(new java.awt.Color(255, 255, 255));
+btnEliminar_fila.setText("Eliminar fila");
+```
+
+```java Delete All
+btnEliminar_todo.setBackground(new java.awt.Color(0, 153, 153));
+btnEliminar_todo.setFont(new java.awt.Font("Segoe UI", 1, 14));
+btnEliminar_todo.setForeground(new java.awt.Color(255, 255, 255));
+btnEliminar_todo.setText("Eliminar todo");
+```
+
+```java Confirm Enrollment
+btnRegistrar.setBackground(new java.awt.Color(0, 153, 153));
+btnRegistrar.setFont(new java.awt.Font("Segoe UI", 1, 14));
+btnRegistrar.setForeground(new java.awt.Color(255, 255, 255));
+btnRegistrar.setText("Matricula");
+```
+
+</CodeGroup>
+
+## Enrollment Workflow
+
+<Steps>
+  <Step title="Course Selection">
+    Student selects desired sections from each of the five subject dropdowns
+  </Step>
+  
+  <Step title="Add to Cart">
+    Clicking "Agregar cursos" adds all selections to the enrollment table
+  </Step>
+  
+  <Step title="Review Selection">
+    Student reviews courses in the table, can delete individual rows or clear all
+  </Step>
+  
+  <Step title="Finalize">
+    Clicking "Matricula" confirms enrollment and displays success message
+  </Step>
+</Steps>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Multiple Sections" icon="list">
+    Each course offers 4 different sections with unique schedules
+  </Card>
+  
+  <Card title="Dynamic Table" icon="table">
+    Real-time table updates as courses are added or removed
+  </Card>
+  
+  <Card title="Flexible Management" icon="sliders">
+    Delete individual rows or clear all courses at once
+  </Card>
+  
+  <Card title="Visual Feedback" icon="comment">
+    Dialog messages confirm enrollment and guide user actions
+  </Card>
+</CardGroup>
+
+## Course Information Structure
+
+Each course listing includes:
+
+<ParamField path="Course Name" type="string">
+  Subject name (Matematica, Historia, Literatura, Civica, Ciencias)
+</ParamField>
+
+<ParamField path="Professor" type="string">
+  Instructor name with title (Prof.)
+</ParamField>
+
+<ParamField path="Room" type="string">
+  Classroom location code (e.g., A0504, B0603)
+</ParamField>
+
+<ParamField path="Schedule" type="string">
+  Meeting days and times (e.g., "Lun y Mie 2:00pm a 4:00pm")
+</ParamField>
+
+## Related Components
+
+- [Student Management](/components/student-management) - Initial registration process
+- [Authentication](/components/authentication) - Login required before enrollment

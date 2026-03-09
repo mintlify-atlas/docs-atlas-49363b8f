@@ -1,0 +1,215 @@
+---
+title: 'Architecture Overview'
+description: 'Comprehensive overview of MatriculaUniPoo application architecture'
+icon: 'sitemap'
+---
+
+## System Architecture
+
+MatriculaUniPoo is a Java Swing desktop application built using a two-tier architecture pattern, separating the presentation layer (GUI) from the business logic layer.
+
+<Card title="Architecture Layers" icon="layer-group">
+  The application follows a clear separation of concerns between the user interface and business logic, making it maintainable and scalable.
+</Card>
+
+## Package Structure
+
+The application is organized into two main packages:
+
+<CardGroup cols={2}>
+  <Card title="igu Package" icon="desktop" href="/architecture/gui-components">
+    Contains all GUI components and user interface frames
+  </Card>
+  <Card title="logica Package" icon="code" href="/architecture/data-model">
+    Houses business logic classes and data models
+  </Card>
+</CardGroup>
+
+### Directory Layout
+
+```
+src/main/java/
+├── igu/
+│   ├── Inicio.java        # Welcome screen
+│   ├── Registrar.java     # Student registration form
+│   ├── Login.java         # Authentication screen
+│   └── Matricula.java     # Course enrollment interface
+└── logica/
+    ├── Main.java          # Application entry point
+    ├── Alumno.java        # Student data model
+    └── Cursos.java        # Course data model
+```
+
+## Application Flow
+
+The application follows a sequential screen flow for student registration and course enrollment:
+
+<Steps>
+  <Step title="Welcome Screen">
+    The `Inicio` frame displays the university welcome message with a registration button
+  </Step>
+  <Step title="Student Registration">
+    Students enter their personal information (name, apellido, DNI, and password) in the `Registrar` frame
+  </Step>
+  <Step title="Authentication">
+    The `Login` frame validates student credentials against the registered information
+  </Step>
+  <Step title="Course Enrollment">
+    After successful login, the `Matricula` frame allows students to select and enroll in courses
+  </Step>
+</Steps>
+
+## Entry Point
+
+The application starts from the `Main` class in the `logica` package:
+
+```java logica/Main.java
+package logica;
+
+import igu.Inicio;
+
+public class Main {
+    public static void main(String[] args) {
+        Inicio in = new Inicio();
+        in.setVisible(true);
+        in.setLocationRelativeTo(null);
+    }
+}
+```
+
+<Info>
+  The `setLocationRelativeTo(null)` method centers the window on the screen.
+</Info>
+
+## Navigation Pattern
+
+The application uses a frame-switching navigation pattern where screens are hidden and shown rather than created and destroyed:
+
+```java
+// Example from Inicio.java:74
+private void btnRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {
+    registrate.setIni(this);
+    registrate.setVisible(true);
+    registrate.setLocationRelativeTo(null);
+    this.setVisible(false);
+}
+```
+
+<Accordion title="Why This Pattern?">
+  This navigation approach maintains state across screens and provides smooth transitions. Each frame holds references to related frames and uses setter methods to maintain bidirectional navigation.
+</Accordion>
+
+## Key Architectural Patterns
+
+### 1. MVC-Inspired Separation
+
+<Tabs>
+  <Tab title="Model">
+    The `Alumno` and `Cursos` classes in the `logica` package represent the data models with getters and setters for all properties.
+  </Tab>
+  <Tab title="View">
+    All JFrame classes in the `igu` package handle presentation and user interaction using Swing components.
+  </Tab>
+  <Tab title="Controller">
+    Event handlers in each frame class act as controllers, responding to user actions and updating models.
+  </Tab>
+</Tabs>
+
+### 2. Frame Reference Management
+
+Each frame maintains references to related frames for navigation:
+
+```java igu/Registrar.java
+private Inicio ini;
+private Login log;
+Alumno alu = new Alumno();
+
+public void setIni(Inicio ini) {
+    this.ini = ini;
+}
+
+public void setLog(Login log) {
+    this.log = log;
+}
+```
+
+<Warning>
+  Frame references are set before navigation to ensure bidirectional communication between screens.
+</Warning>
+
+### 3. Data Passing Between Frames
+
+Student credentials are passed from registration to login using constructor parameters:
+
+```java igu/Registrar.java:207
+private void btnRegistrarseActionPerformed(java.awt.event.ActionEvent evt) {
+    String nombre = txtNombre.getText();
+    String apellido = txtApellido.getText();
+    String dni = txtDni.getText();
+    String contra = txtContra.getText();
+    
+    if (nombre.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "COMPLETE SU NOMBRE", 
+            "Advertencia", JOptionPane.WARNING_MESSAGE);
+    } else if (apellido.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "COMPLETE SU APELLIDO", 
+            "Advertencia", JOptionPane.WARNING_MESSAGE);
+    } else if (dni.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "COMPLETE SU DNI", 
+            "Advertencia", JOptionPane.WARNING_MESSAGE);
+    } else if (contra.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "COMPLETE SU CONTRASEÑA", 
+            "Advertencia", JOptionPane.WARNING_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(null, "REGISTRO EXITOSO");
+        log = new Login(dni, contra);
+        log.setRegis(this);
+        log.setVisible(true);
+        log.setLocationRelativeTo(null);
+        this.setVisible(false);
+    }
+}
+```
+
+## Color Scheme
+
+The application uses a consistent color palette across all screens:
+
+| Component | Color | RGB Value |
+|-----------|-------|----------|
+| Primary Background | Dark Teal | `0, 68, 68` |
+| Secondary Background | Teal | `0, 153, 153` |
+| Text | White | `255, 255, 255` |
+| Input Text | Black | `0, 0, 0` |
+| Accent | Light Cyan | `0, 204, 204` |
+
+<Note>
+  The consistent color scheme provides a professional and cohesive user experience throughout the application.
+</Note>
+
+## Technology Stack
+
+- **Language**: Java
+- **GUI Framework**: Java Swing
+- **Layout Managers**: 
+  - `AbsoluteLayout` (NetBeans lib.awtextra)
+  - `GroupLayout`
+- **IDE**: NetBeans (evidenced by auto-generated GUI code)
+- **Data Structures**: `ArrayList` for course management
+- **UI Components**: 
+  - `JFrame`, `JPanel`, `JButton`
+  - `JTextField`, `JPasswordField`
+  - `JLabel`, `JSeparator`
+  - `JComboBox`, `JTable`
+  - `DefaultTableModel`
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="GUI Components" icon="window-maximize" href="/architecture/gui-components">
+    Explore detailed documentation of all user interface components
+  </Card>
+  <Card title="Data Models" icon="database" href="/architecture/data-model">
+    Learn about the Alumno and Cursos class structures
+  </Card>
+</CardGroup>

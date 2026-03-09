@@ -1,0 +1,712 @@
+---
+title: Contributing Guidelines
+description: How to contribute to the MatriculaUniPoo project
+icon: code-pull-request
+---
+
+## Welcome Contributors
+
+Thank you for your interest in contributing to MatriculaUniPoo! This guide will help you understand how to contribute effectively to the project.
+
+<Note>
+  Whether you're fixing bugs, adding features, improving documentation, or suggesting enhancements, your contributions are valuable and appreciated.
+</Note>
+
+## Code of Conduct
+
+Before contributing, please:
+
+- Be respectful and considerate in all interactions
+- Provide constructive feedback
+- Focus on what is best for the community
+- Show empathy towards other contributors
+
+## Getting Started
+
+<Steps>
+  <Step title="Fork the Repository">
+    Create your own fork of the MatriculaUniPoo repository:
+    ```bash
+    # Click "Fork" on GitHub, then clone your fork
+    git clone https://github.com/YOUR-USERNAME/Matricula.git
+    cd Matricula
+    ```
+  </Step>
+  
+  <Step title="Set Up Development Environment">
+    Follow the [Development Setup](/development/setup) guide to configure your environment with Java 20 and Maven.
+  </Step>
+  
+  <Step title="Create a Branch">
+    Create a new branch for your changes:
+    ```bash
+    git checkout -b feature/your-feature-name
+    # or
+    git checkout -b fix/bug-description
+    ```
+    
+    <Tip>
+      Use descriptive branch names:
+      - `feature/add-course-search`
+      - `fix/login-validation-bug`
+      - `docs/update-setup-guide`
+      - `refactor/improve-course-model`
+    </Tip>
+  </Step>
+  
+  <Step title="Make Your Changes">
+    Implement your changes following the coding standards outlined below.
+  </Step>
+  
+  <Step title="Test Your Changes">
+    Ensure your changes work correctly:
+    ```bash
+    mvn clean compile
+    mvn exec:java -Dexec.mainClass="logica.Main"
+    ```
+    
+    Test all affected functionality manually or add unit tests.
+  </Step>
+  
+  <Step title="Commit Your Changes">
+    Write clear, descriptive commit messages:
+    ```bash
+    git add .
+    git commit -m "Add course search functionality"
+    ```
+  </Step>
+  
+  <Step title="Push and Create Pull Request">
+    ```bash
+    git push origin feature/your-feature-name
+    ```
+    
+    Then create a Pull Request on GitHub with a detailed description of your changes.
+  </Step>
+</Steps>
+
+## Coding Standards
+
+### Java Style Guidelines
+
+Follow these conventions to maintain consistency:
+
+<AccordionGroup>
+  <Accordion title="Naming Conventions">
+    **Classes**: PascalCase
+    ```java
+    public class Alumno { }
+    public class CourseEnrollment { }
+    ```
+    
+    **Methods and Variables**: camelCase
+    ```java
+    private String nombreCompleto;
+    public void setNombre(String nombre) { }
+    ```
+    
+    **Constants**: UPPER_SNAKE_CASE
+    ```java
+    private static final int MAX_COURSES = 5;
+    private static final String DEFAULT_LANGUAGE = "es";
+    ```
+    
+    **Packages**: lowercase
+    ```java
+    package logica;
+    package igu;
+    ```
+  </Accordion>
+  
+  <Accordion title="Code Formatting">
+    **Indentation**: 4 spaces (no tabs)
+    
+    **Braces**: K&R style
+    ```java
+    public void example() {
+        if (condition) {
+            // code here
+        } else {
+            // code here
+        }
+    }
+    ```
+    
+    **Line Length**: Maximum 120 characters
+    
+    **Imports**: Group and sort alphabetically
+    ```java
+    import java.util.ArrayList;
+    import javax.swing.JOptionPane;
+    import logica.Alumno;
+    import logica.Cursos;
+    ```
+  </Accordion>
+  
+  <Accordion title="Documentation">
+    **JavaDoc for Public Methods**:
+    ```java
+    /**
+     * Registers a new student in the system.
+     * 
+     * @param nombre Student's first name
+     * @param apellido Student's last name
+     * @param dni Student's national ID number
+     * @param contraseña Student's password
+     * @return true if registration successful, false otherwise
+     */
+    public boolean registrarAlumno(String nombre, String apellido, 
+                                   String dni, String contraseña) {
+        // Implementation
+    }
+    ```
+    
+    **Inline Comments**: Use for complex logic
+    ```java
+    // Validate that all required fields are filled
+    if (nombre.isEmpty() || apellido.isEmpty()) {
+        return false;
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Project Structure Guidelines
+
+<CardGroup cols={2}>
+  <Card title="GUI Package (igu)" icon="window-maximize">
+    Place all Swing UI components here:
+    - JFrame classes
+    - Form definitions
+    - Event handlers
+    - UI utility classes
+  </Card>
+  
+  <Card title="Logic Package (logica)" icon="brain">
+    Place business logic here:
+    - Data models (JavaBeans)
+    - Validation logic
+    - Business rules
+    - Main entry point
+  </Card>
+</CardGroup>
+
+<Info>
+  If adding new packages (e.g., `dao` for database access, `util` for utilities), discuss with maintainers first.
+</Info>
+
+## Model Classes Pattern
+
+When creating or modifying model classes, follow the JavaBean pattern:
+
+```java Example Model Class
+package logica;
+
+public class Profesor {
+    // Private fields
+    private String nombre;
+    private String apellido;
+    private String especialidad;
+    private String codigo;
+    
+    // Default constructor
+    public Profesor() {
+    }
+    
+    // Parameterized constructor
+    public Profesor(String nombre, String apellido, 
+                   String especialidad, String codigo) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.especialidad = especialidad;
+        this.codigo = codigo;
+    }
+    
+    // Getters and setters
+    public String getNombre() {
+        return nombre;
+    }
+    
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+    
+    public String getApellido() {
+        return apellido;
+    }
+    
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+    
+    // Additional getters/setters...
+    
+    // Optional: toString() for debugging
+    @Override
+    public String toString() {
+        return "Profesor{" +
+               "nombre='" + nombre + '\'' +
+               ", apellido='" + apellido + '\'' +
+               ", especialidad='" + especialidad + '\'' +
+               ", codigo='" + codigo + '\'' +
+               '}';
+    }
+}
+```
+
+## GUI Components Pattern
+
+When creating Swing GUI components:
+
+### Form Initialization
+
+```java GUI Best Practices
+package igu;
+
+import javax.swing.JFrame;
+import logica.Alumno;
+
+public class MiForm extends JFrame {
+    // Reference to other forms
+    private OtraForm otraForm;
+    
+    // Data model
+    private Alumno alumno;
+    
+    // Constructor
+    public MiForm() {
+        initComponents();  // NetBeans-generated UI initialization
+        setupCustomComponents();  // Your custom initialization
+    }
+    
+    // Custom initialization method
+    private void setupCustomComponents() {
+        // Set window properties
+        setLocationRelativeTo(null);  // Center on screen
+        setResizable(false);
+        
+        // Initialize data models
+        alumno = new Alumno();
+    }
+    
+    // Getters and setters for form references
+    public void setOtraForm(OtraForm otraForm) {
+        this.otraForm = otraForm;
+    }
+    
+    // NetBeans-generated code
+    @SuppressWarnings("unchecked")
+    private void initComponents() {
+        // Auto-generated by NetBeans Form Designer
+    }
+}
+```
+
+### Event Handlers
+
+```java Event Handler Pattern
+private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {
+    // 1. Get input from form fields
+    String nombre = txtNombre.getText().trim();
+    String apellido = txtApellido.getText().trim();
+    
+    // 2. Validate input
+    if (nombre.isEmpty()) {
+        JOptionPane.showMessageDialog(this, 
+            "Por favor ingrese el nombre",
+            "Campo requerido", 
+            JOptionPane.WARNING_MESSAGE);
+        txtNombre.requestFocus();
+        return;
+    }
+    
+    // 3. Process data
+    alumno.setNombre(nombre);
+    alumno.setApellido(apellido);
+    
+    // 4. Show confirmation
+    JOptionPane.showMessageDialog(this, 
+        "Datos guardados exitosamente",
+        "Éxito", 
+        JOptionPane.INFORMATION_MESSAGE);
+    
+    // 5. Navigate to next screen if needed
+    // siguienteForm.setVisible(true);
+    // this.setVisible(false);
+}
+```
+
+## Input Validation
+
+Always validate user input before processing:
+
+<CodeGroup>
+```java Text Validation
+public boolean validarTexto(String texto, String nombreCampo) {
+    if (texto == null || texto.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+            "El campo " + nombreCampo + " es requerido",
+            "Validación",
+            JOptionPane.WARNING_MESSAGE);
+        return false;
+    }
+    return true;
+}
+```
+
+```java DNI Validation
+public boolean validarDNI(String dni) {
+    if (dni == null || dni.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+            "El DNI es requerido",
+            "Validación",
+            JOptionPane.WARNING_MESSAGE);
+        return false;
+    }
+    
+    if (!dni.matches("\\d{8}")) {
+        JOptionPane.showMessageDialog(this,
+            "El DNI debe contener 8 dígitos",
+            "Validación",
+            JOptionPane.WARNING_MESSAGE);
+        return false;
+    }
+    
+    return true;
+}
+```
+
+```java Password Validation
+public boolean validarContraseña(String contraseña) {
+    if (contraseña == null || contraseña.isEmpty()) {
+        JOptionPane.showMessageDialog(this,
+            "La contraseña es requerida",
+            "Validación",
+            JOptionPane.WARNING_MESSAGE);
+        return false;
+    }
+    
+    if (contraseña.length() < 6) {
+        JOptionPane.showMessageDialog(this,
+            "La contraseña debe tener al menos 6 caracteres",
+            "Validación",
+            JOptionPane.WARNING_MESSAGE);
+        return false;
+    }
+    
+    return true;
+}
+```
+</CodeGroup>
+
+## Common Contribution Areas
+
+### Feature Enhancements
+
+<CardGroup cols={2}>
+  <Card title="Database Integration" icon="database">
+    Add persistence layer using JDBC or JPA to store student and course data permanently.
+  </Card>
+  
+  <Card title="Enhanced Validation" icon="shield-check">
+    Improve input validation, add email validation, password strength checking.
+  </Card>
+  
+  <Card title="Course Search" icon="magnifying-glass">
+    Add search and filter functionality for available courses.
+  </Card>
+  
+  <Card title="Reporting" icon="file-chart-column">
+    Generate PDF or Excel reports of enrolled students and courses.
+  </Card>
+</CardGroup>
+
+### Bug Fixes
+
+Common areas that need attention:
+
+<AccordionGroup>
+  <Accordion title="Hardcoded Image Paths">
+    **Issue**: Image paths are hardcoded to specific Windows directories
+    
+    **Location**: 
+    - `Inicio.java:52`
+    - `Login.java:140`
+    
+    **Solution**: Move images to `src/main/resources/` and load using:
+    ```java
+    new ImageIcon(getClass().getResource("/images/background.png"))
+    ```
+  </Accordion>
+  
+  <Accordion title="Password Security">
+    **Issue**: Passwords stored in plain text
+    
+    **Location**: `Alumno.java`, `Login.java`
+    
+    **Solution**: Implement password hashing using BCrypt or similar:
+    ```java
+    import org.mindrot.jbcrypt.BCrypt;
+    
+    // Hash password on registration
+    String hashedPassword = BCrypt.hashpw(contraseña, BCrypt.gensalt());
+    
+    // Verify password on login
+    if (BCrypt.checkpw(inputPassword, storedHash)) {
+        // Login successful
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Data Persistence">
+    **Issue**: Data is lost when application closes
+    
+    **Solution**: Implement data persistence using:
+    - File-based storage (JSON, XML)
+    - Embedded database (H2, SQLite)
+    - Full database (MySQL, PostgreSQL)
+  </Accordion>
+</AccordionGroup>
+
+## Testing Guidelines
+
+### Manual Testing Checklist
+
+Before submitting your contribution, test:
+
+<Steps>
+  <Step title="Welcome Screen">
+    - Application launches successfully
+    - "REGISTRARSE" button navigates to registration
+  </Step>
+  
+  <Step title="Registration">
+    - All validation messages display correctly
+    - Empty field validation works
+    - Successful registration shows confirmation
+    - Navigation to login works
+  </Step>
+  
+  <Step title="Login">
+    - Correct credentials allow login
+    - Incorrect credentials show error
+    - "VOLVER" button returns to registration
+  </Step>
+  
+  <Step title="Course Enrollment">
+    - Course selection from dropdowns works
+    - "Agregar cursos" adds to table
+    - "Eliminar fila" removes selected row
+    - "Eliminar todo" clears all courses
+    - "Matricula" button shows confirmation
+  </Step>
+</Steps>
+
+### Adding Unit Tests
+
+When adding new functionality, include unit tests:
+
+```java Example Unit Test
+package logica;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class AlumnoTest {
+    
+    @Test
+    void testConstructor() {
+        Alumno alumno = new Alumno("Juan", "Pérez", "password123", "12345678");
+        
+        assertEquals("Juan", alumno.getNombre());
+        assertEquals("Pérez", alumno.getApellido());
+        assertEquals("12345678", alumno.getDni());
+    }
+    
+    @Test
+    void testSettersAndGetters() {
+        Alumno alumno = new Alumno();
+        alumno.setNombre("María");
+        alumno.setApellido("García");
+        
+        assertEquals("María", alumno.getNombre());
+        assertEquals("García", alumno.getApellido());
+    }
+}
+```
+
+To add testing support, update `pom.xml`:
+
+```xml pom.xml
+<dependencies>
+    <!-- Existing dependencies -->
+    
+    <!-- JUnit 5 for testing -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>5.10.0</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+```
+
+## Pull Request Guidelines
+
+### PR Description Template
+
+When creating a pull request, include:
+
+```markdown
+## Description
+[Brief description of what this PR does]
+
+## Type of Change
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
+- [ ] Documentation update
+
+## Changes Made
+- [List specific changes]
+- [Include file names if significant]
+
+## Testing Done
+- [ ] Manual testing completed
+- [ ] Unit tests added/updated
+- [ ] All tests passing
+
+## Screenshots (if applicable)
+[Add screenshots showing UI changes]
+
+## Related Issues
+Closes #[issue number]
+
+## Checklist
+- [ ] Code follows project style guidelines
+- [ ] Self-review completed
+- [ ] Comments added for complex code
+- [ ] Documentation updated
+- [ ] No new warnings introduced
+```
+
+### Review Process
+
+<Steps>
+  <Step title="Automated Checks">
+    Your PR will be automatically checked for:
+    - Compilation success
+    - Code style violations
+    - Test failures
+  </Step>
+  
+  <Step title="Code Review">
+    Maintainers will review your code for:
+    - Correctness
+    - Code quality
+    - Adherence to standards
+    - Security concerns
+  </Step>
+  
+  <Step title="Feedback">
+    Address review comments by:
+    - Making requested changes
+    - Explaining your approach if needed
+    - Pushing updates to your branch
+  </Step>
+  
+  <Step title="Merge">
+    Once approved, maintainers will merge your PR.
+  </Step>
+</Steps>
+
+## Reporting Issues
+
+Found a bug? Report it!
+
+### Issue Template
+
+```markdown
+## Bug Description
+[Clear description of the bug]
+
+## Steps to Reproduce
+1. Go to '...'
+2. Click on '...'
+3. Enter '...'
+4. See error
+
+## Expected Behavior
+[What you expected to happen]
+
+## Actual Behavior
+[What actually happened]
+
+## Screenshots
+[If applicable]
+
+## Environment
+- OS: [e.g., Windows 11, macOS 13, Ubuntu 22.04]
+- Java Version: [e.g., OpenJDK 20]
+- Maven Version: [e.g., 3.9.5]
+
+## Additional Context
+[Any other relevant information]
+```
+
+## Communication
+
+<CardGroup cols={2}>
+  <Card title="GitHub Issues" icon="github">
+    Use for bug reports and feature requests
+  </Card>
+  
+  <Card title="Pull Requests" icon="code-pull-request">
+    Use for code discussions and reviews
+  </Card>
+  
+  <Card title="Discussions" icon="comments">
+    Use for questions and general discussions
+  </Card>
+  
+  <Card title="Documentation" icon="book">
+    Help improve these docs!
+  </Card>
+</CardGroup>
+
+## Recognition
+
+Contributors will be:
+- Listed in the project's CONTRIBUTORS.md file
+- Mentioned in release notes
+- Credited in commit history
+
+<Tip>
+  All contributions, no matter how small, are valued and appreciated!
+</Tip>
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="Development Setup" icon="wrench" href="/development/setup">
+    Configure your development environment
+  </Card>
+  
+  <Card title="Building the Project" icon="hammer" href="/development/building">
+    Learn the build process
+  </Card>
+  
+  <Card title="Java Documentation" icon="book" href="https://docs.oracle.com/en/java/javase/20/">
+    Official Java 20 documentation
+  </Card>
+  
+  <Card title="Swing Tutorial" icon="window-maximize" href="https://docs.oracle.com/javase/tutorial/uiswing/">
+    Learn Java Swing GUI development
+  </Card>
+</CardGroup>
+
+---
+
+<Note>
+  Thank you for contributing to MatriculaUniPoo! Your efforts help make this project better for everyone.
+</Note>
